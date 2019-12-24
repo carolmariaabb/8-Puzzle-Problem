@@ -30,12 +30,12 @@ class State(object):
         g, h, i = self.board[2]
 
         cell_width = 60
-        cell_blank_color = "green"
+        cell_blank_color = "#ffad60"
 
         label = '<'\
-                '<TABLE BGCOLOR="yellow">'\
+                '<TABLE BGCOLOR="#f57542">'\
                     '<TR>'\
-                        f'<TD COLSPAN="3" WIDTH="{cell_width}" HEIGHT="{cell_width}"> g={g}, h={h}, f=g + h = { g + h} </TD>'\
+                        f'<TD COLSPAN="3" WIDTH="{cell_width}" HEIGHT="{cell_width}" BGCOLOR="#f57542"> g={self.g}, h={self.h}, f=g + h = {self.g + self.h} </TD>'\
                     '</TR>'\
                     '<TR>'\
                         f'<TD BGCOLOR="{cell_color}" WIDTH="{cell_width}" HEIGHT="{cell_width}" ALIGN="center">{a}</TD>'\
@@ -54,6 +54,7 @@ class State(object):
                     '</TR> '\
                 '</TABLE>'\
                 '>'
+
         label = re.sub('<TD\s+BGCOLOR=\"\w*\"\s+WIDTH=\"\d*\"\s+HEIGHT=\"\d*\"\s+ALIGN=\"\w*\">\s*-1\s*</TD>',
                        f'<TD BGCOLOR="{cell_blank_color}" WIDTH="{cell_width}" HEIGHT="{cell_width}" ALIGN="center"> </TD>',
                        label)

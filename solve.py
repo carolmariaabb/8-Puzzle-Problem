@@ -1,7 +1,12 @@
 import pydot
+import os
 from collections import deque
 from copy import deepcopy
 from state import State
+
+
+# Set it to bin folder of graphviz
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 # Start Board configuration
 start_config = [[2, 8, 3],
@@ -24,7 +29,7 @@ operators = {"L": (0, -1),
 
 class Solution(object):
     def __init__(self):
-        self.graph = pydot.Dot(graph_type="digraph", strict=True)
+        self.graph = pydot.Dot(graph_type="digraph", bgcolor="#fff3af", strict=True, label="8 Puzzle Problem      ", labelloc="top", labeljust="center", fontcolor="black", fontsize="40")
         self.visited = dict()
         self.goal = None
 
@@ -98,7 +103,7 @@ class Solution(object):
                 self.graph.add_node(next_state.node)
 
                 # Draw edge from parent node to next generated node
-                edge = pydot.Edge(parent_state.node_name, next_state.node_name, label=f" {direction}")
+                edge = pydot.Edge(parent_state.node_name, next_state.node_name, label=f" {direction}", fontsize="24")
                 self.graph.add_edge(edge)
 
                 f = g_current + h_current
@@ -131,7 +136,7 @@ class Solution(object):
             # self.graph.add_node(v)
 
             # Make Edge
-            edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3)
+            edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3, fontsize="24")
             self.graph.add_edge(edge)
 
             self.goal = self.goal.parent
