@@ -2,49 +2,49 @@ import pydot
 from collections import deque
 from copy import deepcopy
 from state import State
-import re
 
-
+# Start Board configuration
 start_config = [[2, 8, 3],
                 [1, 6, 4],
                 [7, -1, 5],
                 ]
 
+# Goal Board configuration
 goal_config = [[1, 2, 3],
-                  [8, -1, 4],
-                  [7, 6, 5],
-                  ]
+               [8, -1, 4],
+               [7, 6, 5],
+               ]
 
 operators = {"L": (0, -1),
-                 "R": (0, 1),
-                 "U": (-1, 0),
-                 "D": (1, 0),
-                 }
+             "R": (0, 1),
+             "U": (-1, 0),
+             "D": (1, 0),
+             }
+
+
 class Solution(object):
-
-    
-
     def __init__(self):
-        self.graph = pydot.Dot(graph_type="graph")
+        self.graph = pydot.Dot(graph_type="digraph", strict=True)
         self.visited = dict()
         self.goal = None
 
     def write_image(self, file_name="out.png"):
         self.graph.write_png("out.png")
 
-    def find_blank_position(self, board):
+    @staticmethod
+    def find_blank_position(board):
         for i in range(3):
             for j in range(3):
                 if board[i][j] == -1:
                     return i, j
 
-    def is_valid_move(self, next_x, next_y):
+    @staticmethod
+    def is_valid_move(next_x, next_y):
         return 0 <= next_x < 3 and 0 <= next_y < 3
 
     def solve(self, parent_state):
+        f_parent, g_parent, h_parent, board_parent, node_parent = parent_state.f, parent_state.g, parent_state.h, parent_state.board, parent_state.node
 
-        f_parent, g_parent, h_parent, board_parent, node_parent = parent_state.f,  parent_state.g,  parent_state.h,  parent_state.board,  parent_state.node
-     
         if parent_state.is_start_state(start_config):
             self.graph.add_node(node_parent)
 
@@ -61,12 +61,13 @@ class Solution(object):
 
         for direction, (x, y) in operators.items():
             next_x, next_y = current_x + x, current_y + y
-        
+
             if self.is_valid_move(next_x, next_y):
-                board_parent[next_x][next_y], board_parent[current_x][current_y] = board_parent[current_x][current_y], board_parent[next_x][next_y]
+                board_parent[next_x][next_y], board_parent[current_x][current_y] = board_parent[current_x][current_y], \
+                                                                                   board_parent[next_x][next_y]
 
                 g_current, h_current = g_parent + 1, self.calculate_manhattan_distance(board_parent)
-                
+
                 next_state = State(g=g_current, h=h_current, parent=parent_state, board=board_parent)
                 self.graph.add_node(next_state.node)
 
@@ -75,28 +76,36 @@ class Solution(object):
 
                 f = g_current + h_current
 
-                if  next_state not in self.visited and f < minm_heuristic_distance:
+                if next_state not in self.visited and f < minm_heuristic_distance:
                     minm_heuristic_distance = f
                     selected_board_configuration = deepcopy(next_state)
 
-                board_parent[next_x][next_y], board_parent[current_x][current_y] = board_parent[current_x][current_y], board_parent[next_x][next_y]
+                board_parent[next_x][next_y], board_parent[current_x][current_y] = board_parent[current_x][current_y], \
+                                                                                   board_parent[next_x][next_y]
 
         if selected_board_configuration is not None:
             solved = self.solve(selected_board_configuration)
-                
-        return solved
 
+        return solved
 
     def trace_path(self):
         i = 0
         while self.goal.parent:
-            print(i, self.goal)
-            if self.goal.parent:
-                self.goal.parent.color_node()
+            # Connect every 2 nodes in path by recoloring the node
+            u = pydot.Node(self.goal.parent.node_name, label=self.goal.parent.generate_label("gold"))
+            self.graph.add_node(u)
+            v = pydot.Node(self.goal.node_name, label=self.goal.parent.generate_label("gold"))
+            self.graph.add_node(v)
+
+            # Make Edge
+            edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3)
+            self.graph.add_edge(edge)
+
             self.goal = self.goal.parent
             i += 1
 
-    def calculate_manhattan_distance(self, board):
+    @staticmethod
+    def calculate_manhattan_distance(board):
         """Returns Manhattan distance for the board configuration   
 
         Arguments:
@@ -105,10 +114,11 @@ class Solution(object):
         Returns:
             [int] -- [Calculate Manhattan distance]
         """
+
         def is_valid_move(next_x, next_y):
             return 0 <= next_x < 3 and 0 <= next_y < 3
 
-        def bfs(board, i, j):
+        def bfs(i, j):
             """"BFS helper function to calculate the shortest distance for a value to reach 
                 its correct place
             """
@@ -133,4 +143,4 @@ class Solution(object):
 
         # Returns the manhattan distance i.e the sum of number of minimum steps to reach
         # goal position
-        return sum(bfs(board, i, j) for i in range(3) for j in range(3) if board[i][j] != -1)
+        return sum(bfs(i, j) for i in range(3) for j in range(3) if board[i][j] != -1)

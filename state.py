@@ -1,7 +1,8 @@
 import pydot
 import re
 
-class State():
+
+class State(object):
     def __init__(self, *, g, h, parent, board):
         self.g = g
         self.h = h
@@ -9,23 +10,17 @@ class State():
         self.parent = parent
         self.board = board
         self.node_name = str(tuple(map(tuple, self.board))) + str(self.g)
-        self.node = pydot.Node(self.node_name, label=self.generate_label(), shape="plaintext")
+        self.node = pydot.Node(self.node_name, label=self.generate_label(), shape="plaintext", dir="forward")
 
     def __hash__(self):
         return hash(str(tuple(map(tuple, self.board))) + str(self.g))
 
     def __str__(self):
         return str(self.board)
-    
-    def color_node(self):
-        self.node.set("label", self.generate_label("gold"))
-        # print(self.node.get("label"))
-        self.node.set_label("ss")
-
 
     def is_start_state(self, start_state):
         return all(self.board[i][j] == start_state[i][j] for i in range(3) for j in range(3))
-    
+
     def is_goal_state(self, goal_state):
         return all(self.board[i][j] == goal_state[i][j] for i in range(3) for j in range(3))
 
@@ -59,8 +54,8 @@ class State():
                     '</TR> '\
                 '</TABLE>'\
                 '>'
-        label = re.sub('<TD\s+BGCOLOR=\"\w*\"\s+WIDTH=\"\d*\"\s+HEIGHT=\"\d*\"\s+ALIGN=\"\w*\">\s*-1\s*</TD>', f'<TD BGCOLOR="{cell_blank_color}" WIDTH="{cell_width}" HEIGHT="{cell_width}" ALIGN="center"> </TD>', label)
+        label = re.sub('<TD\s+BGCOLOR=\"\w*\"\s+WIDTH=\"\d*\"\s+HEIGHT=\"\d*\"\s+ALIGN=\"\w*\">\s*-1\s*</TD>',
+                       f'<TD BGCOLOR="{cell_blank_color}" WIDTH="{cell_width}" HEIGHT="{cell_width}" ALIGN="center"> </TD>',
+                       label)
         return label
         # return "{ {"+str(a)+"|"+str(b)+"|"+ str(c) +"}"+"|{"+str(d)+"|"+str(e)+"|"+str(f)+"}| {"+str(g)+"|"+str(h)+"|"+str(i)+"}}"
-
-
