@@ -92,10 +92,10 @@ class Solution(object):
         i = 0
         while self.goal.parent:
             # Connect every 2 nodes in path by recoloring the node
-            u = pydot.Node(self.goal.parent.node_name, label=self.goal.parent.generate_label("gold"))
-            self.graph.add_node(u)
-            v = pydot.Node(self.goal.node_name, label=self.goal.parent.generate_label("gold"))
-            self.graph.add_node(v)
+            # u = pydot.Node(self.goal.parent.node_name, label=self.goal.parent.generate_label("gold"))
+            # self.graph.add_node(u)
+            # v = pydot.Node(self.goal.node_name, label=self.goal.generate_label("gold"))
+            # self.graph.add_node(v)
 
             # Make Edge
             edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3)
