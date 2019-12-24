@@ -58,4 +58,3 @@ class State(object):
                        f'<TD BGCOLOR="{cell_blank_color}" WIDTH="{cell_width}" HEIGHT="{cell_width}" ALIGN="center"> </TD>',
                        label)
         return label
-        # return "{ {"+str(a)+"|"+str(b)+"|"+ str(c) +"}"+"|{"+str(d)+"|"+str(e)+"|"+str(f)+"}| {"+str(g)+"|"+str(h)+"|"+str(i)+"}}"
