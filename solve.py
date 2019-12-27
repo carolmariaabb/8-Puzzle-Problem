@@ -1,6 +1,5 @@
 import pydot
 import os
-from collections import deque
 from copy import deepcopy
 from state import State
 
@@ -26,6 +25,9 @@ operators = {"L": (0, -1),
              "D": (1, 0),
              }
 
+# Dictionary that maps each element to its (row, col) in goal configuration
+goal_position = {goal_config[row][col]: (row, col) for row in range(3) for col in range(3)}
+
 
 class Solution(object):
     def __init__(self):
@@ -37,7 +39,27 @@ class Solution(object):
         """
         :param file_name: Name of the output file to be written
         """
-        self.graph.write_png(file_name)
+        try:
+            self.graph.write_png(file_name)
+        except Exception as e:
+            print("Error Writing image", e)
+
+    def draw_legend(self):
+        """
+            Utility method to draw legend on graph if  legend flag is ON
+        """
+        graphlegend = pydot.Cluster(graph_name="legend", label="Legend", fontsize="20", color="#fff3af",
+                                    fontcolor="blue", style="filled", fillcolor="#fff3af")
+
+        node1 = pydot.Node("1",  style="filled", fillcolor="gold", label= "g: depth level\n\n h: Manhattan Distance", shape="plaintext",  labeljust="left", fontsize="20", fontcolor="red", width="3")
+        graphlegend.add_node(node1)
+
+        node2 = pydot.Node("2", label="sss",
+                           shape="plaintext", fontsize="20", fontcolor="red", width="3")
+        graphlegend.add_node(node2)
+
+        graphlegend.add_edge(pydot.Edge("1", "2", style="invis"))
+        self.graph.add_subgraph(graphlegend)
 
     @staticmethod
     def find_blank_position(board) -> (int, int):
@@ -129,12 +151,7 @@ class Solution(object):
         """
         i = 0
         while self.goal.parent:
-            # Connect every 2 nodes in path by recoloring the node
-            # u = pydot.Node(self.goal.parent.node_name, label=self.goal.parent.generate_label("gold"))
-            # self.graph.add_node(u)
-            # v = pydot.Node(self.goal.node_name, label=self.goal.generate_label("gold"))
-            # self.graph.add_node(v)
-
+            # TODO: Recolor the node
             # Make Edge
             edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3, fontsize="24")
             self.graph.add_edge(edge)
@@ -144,33 +161,10 @@ class Solution(object):
 
     @staticmethod
     def calculate_manhattan_distance(board):
-
-        def is_valid_move(row, col):
-            return 0 <= row < 3 and 0 <= col < 3
-
-        def bfs(row, col):
-            """"BFS helper function to calculate the shortest distance for a value to reach
-                its correct place
-            """
-            q = deque()
-            visited = dict()
-
-            # Tuple (x_pos, y_pos, depth_level)
-            q.append((row, col, 0))
-            visited[(row, col)] = True
-
-            while q:
-                current_row, current_col, current_level = q.popleft()
-                if board[row][col] == goal_config[current_row][current_col]:
-                    return current_level
-                for direction, (x, y) in operators.items():
-                    next_row, next_col, next_level = current_row + x, current_col + y, current_level + 1
-
-                    if is_valid_move(next_row, next_col):
-                        if (next_row, next_col) not in visited:
-                            visited[(next_row, next_col)] = True
-                            q.append((next_row, next_col, next_level))
-
-        # Returns the manhattan distance i.e the sum of number of minimum steps to reach
-        # goal position
-        return sum(bfs(row, col) for row in range(3) for col in range(3) if board[row][col] != -1)
+        dist = 0
+        for row in range(3):
+            for col in range(3):
+                if board[row][col] != -1:
+                    x, y = goal_position[board[row][col]]
+                    dist += abs(x - row) + abs(y - col)
+        return dist

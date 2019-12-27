@@ -24,5 +24,10 @@ os.environ["PATH"] += os.pathsep +  'C:/Program Files (x86)/Graphviz2.38/bin/'
 ```
 pip install -r requirements.txt
 ``` 
+```
+python main.py
+``` 
+
+The state space tree is saved as "out.png".
 ## Screenshots
 ![enter image description here](https://github.com/sarangbishal/8-Puzzle-Problem/blob/master/assets/out.png)

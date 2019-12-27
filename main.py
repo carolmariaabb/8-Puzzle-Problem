@@ -18,6 +18,8 @@ def main():
     s.solve(root_state)
     # Recolor the nodes and edges to show the path
     s.trace_path()
+    #
+    s.draw_legend()
     # Write State space tree
     s.write_image("out.png")
 
