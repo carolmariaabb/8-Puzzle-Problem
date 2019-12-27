@@ -3,7 +3,6 @@ import os
 from copy import deepcopy
 from state import State
 
-
 # Set it to bin folder of graphviz
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
@@ -31,7 +30,8 @@ goal_position = {goal_config[row][col]: (row, col) for row in range(3) for col i
 
 class Solution(object):
     def __init__(self):
-        self.graph = pydot.Dot(graph_type="digraph", bgcolor="#fff3af", strict=True, label="8 Puzzle Problem      ", labelloc="top", labeljust="center", fontcolor="black", fontsize="40")
+        self.graph = pydot.Dot(graph_type="digraph", bgcolor="#fff3af", strict=True, label="8 Puzzle Problem      ",
+                               labelloc="top", labeljust="center", fontcolor="black", fontsize="40")
         self.visited = dict()
         self.goal = None
 
@@ -41,6 +41,7 @@ class Solution(object):
         """
         try:
             self.graph.write_png(file_name)
+            print(f"Image {file_name} written successfully.")
         except Exception as e:
             print("Error Writing image", e)
 
@@ -51,11 +52,11 @@ class Solution(object):
         graphlegend = pydot.Cluster(graph_name="legend", label="Legend", fontsize="20", color="#fff3af",
                                     fontcolor="blue", style="filled", fillcolor="#fff3af")
 
-        node1 = pydot.Node("1",  style="filled", fillcolor="gold", label= "g: depth level\n\n h: Manhattan Distance", shape="plaintext",  labeljust="left", fontsize="20", fontcolor="red", width="3")
+        node1 = pydot.Node("1", style="filled", fillcolor="gold", label="g: depth level\n\n h: Manhattan Distance",
+                           shape="plaintext", labeljust="left", fontsize="20", fontcolor="red", width="3")
         graphlegend.add_node(node1)
 
-        node2 = pydot.Node("2", label="sss",
-                           shape="plaintext", fontsize="20", fontcolor="red", width="3")
+        node2 = pydot.Node("2", label="", shape="plaintext", fontsize="20", fontcolor="red", width="3")
         graphlegend.add_node(node2)
 
         graphlegend.add_edge(pydot.Edge("1", "2", style="invis"))
@@ -121,7 +122,7 @@ class Solution(object):
                 g_current, h_current = g_parent + 1, self.calculate_manhattan_distance(board_parent)
 
                 # Make next State object and add node to the solution graph
-                next_state = State(g=g_current, h=h_current, parent=parent_state, board=board_parent)
+                next_state = State(g=g_current, h=h_current, parent=parent_state, board=deepcopy(board_parent))
                 self.graph.add_node(next_state.node)
 
                 # Draw edge from parent node to next generated node
@@ -149,15 +150,25 @@ class Solution(object):
         """
         Show solution nodes by recoloring
         """
-        i = 0
+        path = list()
         while self.goal.parent:
             # TODO: Recolor the node
             # Make Edge
-            edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3, fontsize="24")
+            edge = pydot.Edge(self.goal.parent.node_name, self.goal.node_name, style="filled", color="red", penwidth=3,
+                              fontsize="24")
             self.graph.add_edge(edge)
 
+            path.append(self.goal.parent)
             self.goal = self.goal.parent
-            i += 1
+
+        # Show solution states on console
+        path = path[::-1]
+        print("The solution states are shown below\n")
+        print(f"""| {start_config[0][0]} | {start_config[0][1]} | {start_config[0][2]} |\n| {start_config[1][0]} | {
+        start_config[1][1]} | {start_config[1][2]} |\n| {start_config[2][0]} | {start_config[2][1]} | {start_config[2][
+            2]} |""", end="\n\n")
+        for state in path:
+            print(state, end="\n\n")
 
     @staticmethod
     def calculate_manhattan_distance(board):

@@ -16,7 +16,11 @@ class State(object):
         return hash(str(tuple(map(tuple, self.board))) + str(self.g))
 
     def __str__(self):
-        return str(self.board)
+        a, b, c = self.board[0]
+        d, e, f = self.board[1]
+        g, h, i = self.board[2]
+        str_rep = f"""| {a} | {b} | {c} |\n| {d} | {e} | {f} |\n| {g} | {h} | {i} |"""
+        return str_rep
 
     def is_start_state(self, start_state):
         return all(self.board[i][j] == start_state[i][j] for i in range(3) for j in range(3))
