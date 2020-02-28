@@ -30,4 +30,4 @@ python main.py
 
 The state space tree is saved as "out.png".
 ## Screenshots
-![enter image description here](https://github.com/sarangbishal/8-Puzzle-Problem/blob/master/assets/out.png)
+![enter image description here](https://github.com/Bishalsarang/8-Puzzle-Problem/blob/master/assets/out.png)
