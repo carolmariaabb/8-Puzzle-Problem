@@ -24,6 +24,8 @@ operators = {"L": (0, -1),
              "D": (1, 0),
              }
 
+borders = []
+
 # Dictionary that maps each element to its (row, col) in goal configuration
 goal_position = {goal_config[row][col]: (row, col) for row in range(3) for col in range(3)}
 
@@ -105,6 +107,7 @@ class Solution(object):
         solved = False
         minm_heuristic_distance = float("inf")
         selected_board_configuration = None
+        expanded_node = ""
 
         # Apply operations
         for direction, (offset_row, offset_col) in operators.items():
@@ -122,7 +125,7 @@ class Solution(object):
                 g_current, h_current = g_parent + 1, self.calculate_manhattan_distance(board_parent)
 
                 # Make next State object and add node to the solution graph
-                next_state = State(g=g_current, h=h_current, parent=parent_state, board=deepcopy(board_parent))
+                next_state = State(g=g_current, h=h_current, parent=parent_state, board=deepcopy(board_parent), direction=direction)
                 self.graph.add_node(next_state.node)
 
                 # Draw edge from parent node to next generated node
@@ -130,10 +133,13 @@ class Solution(object):
                 self.graph.add_edge(edge)
 
                 f = g_current + h_current
+
+                borders.append((next_state.node_name, f))
                 # If f is less than minimum heuristic distance obtained so far
                 if next_state not in self.visited and f < minm_heuristic_distance:
                     minm_heuristic_distance = f
                     selected_board_configuration = deepcopy(next_state)
+                    expanded_node = (next_state.node_name, f)
 
                 board_parent[next_row][next_col], board_parent[current_row][current_col] = board_parent[current_row][
                                                                                                current_col], \
@@ -142,6 +148,12 @@ class Solution(object):
 
         # If at least one board is valid, solve recursively for best(minimum f) valid next configuration
         if selected_board_configuration is not None:
+            #Imprimir fronteira atual, ordenando pelo valor do f
+            print(sorted(borders, key=lambda x: x[1]))
+
+            #Remover da fronteira o no a ser expandido
+            borders.remove(expanded_node)
+
             solved = self.solve(selected_board_configuration)
 
         return solved
@@ -160,15 +172,6 @@ class Solution(object):
 
             path.append(self.goal.parent)
             self.goal = self.goal.parent
-
-        # Show solution states on console
-        path = path[::-1]
-        print("The solution states are shown below\n")
-        print(f"""| {start_config[0][0]} | {start_config[0][1]} | {start_config[0][2]} |\n| {start_config[1][0]} | {
-        start_config[1][1]} | {start_config[1][2]} |\n| {start_config[2][0]} | {start_config[2][1]} | {start_config[2][
-            2]} |""", end="\n\n")
-        for state in path:
-            print(state, end="\n\n")
 
     @staticmethod
     def calculate_manhattan_distance(board):

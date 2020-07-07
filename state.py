@@ -3,13 +3,13 @@ import re
 from string import  Template
 
 class State(object):
-    def __init__(self, *, g, h, parent, board):
+    def __init__(self, *, g, h, parent, board, direction):
         self.g = g
         self.h = h
         self.f = self.g + self.h
         self.parent = parent
         self.board = board
-        self.node_name = str(tuple(map(tuple, self.board))) + str(self.g)
+        self.node_name = direction + str(g)
         self.node = pydot.Node(self.node_name, label=self.generate_label(), shape="plaintext", dir="forward")
 
     def __hash__(self):

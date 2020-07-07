@@ -4,6 +4,10 @@ from state import State
 from copy import  deepcopy
 
 def main():
+    print("Fronteiras:\n")
+
+    print("[Raiz]")
+
     # Create Solution Object
     s = Solution()
     # Start from start configureation
@@ -13,7 +17,7 @@ def main():
     g, h = 0, s.calculate_manhattan_distance(start)
 
     # Make root State as start config
-    root_state = State(g=g, h=h, parent=None, board=deepcopy(start))
+    root_state = State(g=g, h=h, parent=None, board=deepcopy(start), direction="")
     # Solve Recursively starting from root state
     s.solve(root_state)
     # Recolor the nodes and edges to show the path
