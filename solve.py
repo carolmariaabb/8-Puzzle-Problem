@@ -7,15 +7,15 @@ from state import State
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 # Start Board configuration
-start_config = [[2, 8, 3],
-                [1, 6, 4],
-                [7, -1, 5],
+start_config = [[1, 8, 2],
+                [-1, 4, 3],
+                [7, 6, 5],
                 ]
 
 # Goal Board configuration
 goal_config = [[1, 2, 3],
-               [8, -1, 4],
-               [7, 6, 5],
+               [4, 5, 6],
+               [7, 8, -1],
                ]
 
 operators = {"L": (0, -1),
